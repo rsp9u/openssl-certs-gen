@@ -5,6 +5,7 @@ key=cert.key
 csr=cert.csr
 cert=cert.crt
 cnf=$1
+san=$2
 
 # CA
 openssl genrsa -out $ca_key 4096
@@ -17,6 +18,6 @@ echo "01" > CA/serial
 
 # cert
 openssl genrsa -out $key 4096
-openssl req -new -key $key -out $csr -subj "/C=JP/ST=Gunma/L=Maebashi/CN=Server"
-openssl ca -batch -config $cnf -in $csr -keyfile $ca_key -cert $ca_cert -out $cert
+openssl req -config $cnf -new -key $key -out $csr -extensions v3_req -subj "/C=JP/ST=Gunma/L=Maebashi/CN=Server" -addext "subjectAltName = DNS:$san"
+openssl ca -config $cnf -batch -in $csr -keyfile $ca_key -cert $ca_cert -out $cert
 rm -f $csr
